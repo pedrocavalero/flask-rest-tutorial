@@ -1,5 +1,6 @@
 from flask import Flask, request
 from flask_restful import Api, Resource, abort, reqparse
+from flask_httpauth import HTTPBasicAuth
 import datetime
 from flask import request
 from functools import wraps
@@ -7,6 +8,16 @@ from functools import wraps
 app = Flask(__name__)
 api = Api(app)
 
+auth = HTTPBasicAuth()
+USER_DATA = {
+	"admin": "SuperSecretPwd"
+}
+#route to verify the password
+@auth.verify_password
+def verify(username, password):
+	if not(username and password):
+		return False
+	return USER_DATA.get(username) == password
 
 def time(function=None):
     @wraps(function)
@@ -67,6 +78,7 @@ class Todo(Resource):
 class TodoList(Resource):
     @time
     @monitor
+    @auth.login_required
     def get(self):
         return TODOS
 
