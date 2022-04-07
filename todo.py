@@ -78,7 +78,7 @@ class Todo(Resource):
 class TodoList(Resource):
     @time
     @monitor
-    @auth.login_required
+    #@auth.login_required
     def get(self):
         return TODOS
 
