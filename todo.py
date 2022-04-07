@@ -1,8 +1,32 @@
 from flask import Flask, request
 from flask_restful import Api, Resource, abort, reqparse
+import datetime
+from flask import request
+from functools import wraps
 
 app = Flask(__name__)
 api = Api(app)
+
+
+def time(function=None):
+    @wraps(function)
+    def wrapper(*args, **kwargs):
+        s = datetime.datetime.now()
+        _ = function(*args, **kwargs)
+        e = datetime.datetime.now()
+        print("Execution Time : {} ".format(e-s))
+        return _
+    return wrapper
+
+def monitor(function=None):
+    @wraps(function)
+    def wrapper(*args, **kwargs):
+        _ = function(*args, **kwargs)
+        print("Ip Address  : {} ".format(request.remote_user))
+        print("Cookies : {} ".format(request.cookies))
+        print(request.user_agent)
+        return _
+    return wrapper
 
 TODOS = {
     'todo1': {'task': 'build an API'},
@@ -41,6 +65,8 @@ class Todo(Resource):
 # TodoList
 # shows a list of all todos, and lets you POST to add new tasks
 class TodoList(Resource):
+    @time
+    @monitor
     def get(self):
         return TODOS
 
