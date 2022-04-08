@@ -3,9 +3,15 @@ version: '3.4'
 services:
   flaskresttutorial:
     image: flaskresttutorial
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: ./Dockerfile
+    command: ["sh", "-c", "pip install debugpy -t /tmp && python /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 cache.py "]
+    ports:
+      - 5000:5000
+      - 5678:5678
   redis:
     image: redis
     container_name: redis-container
